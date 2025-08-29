@@ -6,7 +6,6 @@ from tensor.tensor import Tensor
 class UnaryFunction(Function):
     def __init__(self, operand: Tensor):
         self.next_functions = [operand]
-        self.saved_tensors = ()
 
         self.operand = operand
 

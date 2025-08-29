@@ -8,7 +8,6 @@ from utils import unbroadcast
 class BinaryFunction(Function):
     def __init__(self, operand1: Tensor, operand2: Tensor):
         self.next_functions = [operand1, operand2]
-        self.saved_tensors = ()
 
         self.operand1 = operand1
         self.operand2 = operand2

@@ -4,6 +4,11 @@ from autograd.funtion import Function
 from utils import wrap_data
 
 class Tensor:
+    data: np.ndarray
+    grad: np.ndarray | None
+    grad_fn: 'Function | None'
+    requires_grad: bool
+
     def __init__(
         self, data, requires_grad = False
     ):
@@ -15,7 +20,6 @@ class Tensor:
     def backward(self, gradient = None):
         if gradient is None:
             gradient = np.ones_like(self.data)
-        
         
 
     def is_scalar(self):

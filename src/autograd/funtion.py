@@ -4,7 +4,8 @@ from tensor.tensor import Tensor
 
 class Function:
     next_functions: List[Tensor]
-    saved_tensors: Tuple[Any, ...]
+    saved_tensors: Tuple[Any, ...] = ()
+    countdown: int = 0
     
     def __init__(self):
         pass
