@@ -6,4 +6,4 @@ def wrap_data(data) -> np.ndarray:
     elif isinstance(data, (int, float)):
         return np.array(data, dtype=float)
 
-    raise TypeError(f"Unsupported data type '{type(data)}' for tensor initialization")
+    raise TypeError(f"Unsupported data type '{type(data).__name__}' for tensor initialization")

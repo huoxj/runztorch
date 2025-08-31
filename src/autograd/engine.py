@@ -14,8 +14,6 @@ def apply_grad(tensor: Tensor, grad: np.ndarray):
 
     tensor.grad = tensor.grad + grad
 
-def handle_func_backward(fn: Function, grad: np.ndarray):
-    pass
 
 class Engine:
     _instance = None
@@ -30,11 +28,10 @@ class Engine:
             return
 
         self._backward_countdown(tensor.grad_fn)
-        
+        self._backward_grad(tensor, grad)
 
     @staticmethod
     def _backward_countdown(root_fn: Function):
-        root_fn.countdown = 0
         queue = [root_fn]
         while len(queue) > 0:
             fn = queue.pop(0)
@@ -45,14 +42,35 @@ class Engine:
                 queue.append(next_tensor.grad_fn)
 
     @staticmethod
-    def _backward_grad(root_tensor: Tensor, grad: np.ndarray):
-        root_tensor.grad = grad
+    def _backward_grad(root_tensor: Tensor, root_grad: np.ndarray):
+        root_tensor.grad = root_grad
         if root_tensor.grad_fn is None:
             return
         
         queue: List[Tuple[Function, np.ndarray]] \
-            = [(root_tensor.grad_fn, grad)]
+            = [(root_tensor.grad_fn, root_grad)]
 
         while len(queue) > 0:
-            fn = queue.pop(0)
+            fn, grad = queue[0]
+
+            grad_outputs = fn.backward(grad)
+
+            if not isinstance(grad_outputs, tuple):
+                grad_outputs = (grad_outputs,)
             
+            if len(fn.next_functions) != len(grad_outputs):
+                raise ValueError(f"Grad outputs length mismatch next functions length: expect {len(fn.next_functions)}, actual {len(grad_outputs)}")
+
+            for next_tensor, grad_output in zip(fn.next_functions, grad_outputs):           
+                if next_tensor is None:
+                    continue
+                    
+                apply_grad(next_tensor, grad_output)
+
+                next_fn = next_tensor.grad_fn
+                if next_fn is None:
+                    continue
+
+                next_fn.countdown -= 1
+                if next_fn.countdown == 0:
+                    queue.append((next_fn, grad_output))
