@@ -27,7 +27,6 @@ class Tensor:
     def is_scalar(self):
         return self.data.ndim == 0
 
-    def __add__(self, other):
-        if not isinstance(other, Tensor):
-            raise TypeError("Operand must be a Tensor")
+    def __add__(self, other: Tensor):
+
 
