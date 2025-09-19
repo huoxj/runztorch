@@ -12,3 +12,10 @@ def unbroadcast(grad: np.ndarray, shape: tuple) -> np.ndarray:
             grad = grad.sum(axis=i, keepdims=True)
 
     return grad
+
+# (2, 2, 2) + (2, 2) -> (2, 2, 2)
+# Expand:
+# (2, 2) -> (1, 2, 2) --[copy]-> (2, 2, 2)
+# Unbroadcast:
+# grad(2, 2, 2), shape(2, 2)
+# 
